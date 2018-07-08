@@ -5,20 +5,24 @@
 //
 #include <Adafruit_GFX.h>
 #include <SPI.h>
-#include <Wire.h>
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_STMPE610.h>
+#include <SeeedTouchScreen.h>
 
-// This is calibration data for the raw touch data to the screen coordinates
-#define TS_MINX 150
-#define TS_MINY 130
-#define TS_MAXX 3800
-#define TS_MAXY 4000
+//Measured ADC values for (0,0) and (210-1,320-1)
+//TS_MINX corresponds to ADC value when X = 0
+//TS_MINY corresponds to ADC value when Y = 0
+//TS_MAXX corresponds to ADC value when X = 240 -1
+//TS_MAXY corresponds to ADC value when Y = 320 -1
 
-#define STMPE_CS 8
-Adafruit_STMPE610 ts = Adafruit_STMPE610(STMPE_CS);
-#define TFT_CS 10
-#define TFT_DC 9
+#define TS_MINX 116*2
+#define TS_MAXX 890*2
+#define TS_MINY 83*2
+#define TS_MAXY 913*2
+
+TouchScreen ts = TouchScreen(A3, A2, A1, A0);
+
+#define TFT_DC 6
+#define TFT_CS 5
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 boolean RecordOn = false;
@@ -71,12 +75,6 @@ void setup(void)
 {
   Serial.begin(9600);
   tft.begin();
-  if (!ts.begin()) { 
-    Serial.println("Unable to start touchscreen.");
-  } 
-  else { 
-    Serial.println("Touchscreen started."); 
-  }
 
   tft.fillScreen(ILI9341_BLUE);
   // origin = left,top landscape (USB left upper)
@@ -87,14 +85,18 @@ void setup(void)
 void loop()
 {
   // See if there's any  touch data for us
-  if (!ts.bufferEmpty())
+  if (ts.isTouching())
   {   
     // Retrieve a point  
-    TS_Point p = ts.getPoint(); 
+    Point p = ts.getPoint(); 
     // Scale using the calibration #'s
     // and rotate coordinate system
     p.x = map(p.x, TS_MINY, TS_MAXY, 0, tft.height());
     p.y = map(p.y, TS_MINX, TS_MAXX, 0, tft.width());
+
+	Serial.print("X "); Serial.print(p.x);
+	Serial.print(" | Y "); Serial.println(p.y);
+
     int y = tft.height() - p.x;
     int x = p.y;
 
@@ -102,7 +104,7 @@ void loop()
     {
       if((x > REDBUTTON_X) && (x < (REDBUTTON_X + REDBUTTON_W))) {
         if ((y > REDBUTTON_Y) && (y <= (REDBUTTON_Y + REDBUTTON_H))) {
-          Serial.println("Red btn hit"); 
+          //Serial.println("Red btn hit"); 
           redBtn();
         }
       }
@@ -111,13 +113,13 @@ void loop()
     {
       if((x > GREENBUTTON_X) && (x < (GREENBUTTON_X + GREENBUTTON_W))) {
         if ((y > GREENBUTTON_Y) && (y <= (GREENBUTTON_Y + GREENBUTTON_H))) {
-          Serial.println("Green btn hit"); 
+          //Serial.println("Green btn hit"); 
           greenBtn();
         }
       }
     }
 
-    Serial.println(RecordOn);
+    //Serial.println(RecordOn);
   }  
 }
 

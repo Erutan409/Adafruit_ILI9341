@@ -16,23 +16,24 @@
 
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <SPI.h>
-#include <Wire.h>      // this is needed even tho we aren't using it
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_STMPE610.h>
+#include <SeeedTouchScreen.h>
 
-// This is calibration data for the raw touch data to the screen coordinates
-#define TS_MINX 150
-#define TS_MINY 130
-#define TS_MAXX 3800
-#define TS_MAXY 4000
+//Measured ADC values for (0,0) and (210-1,320-1)
+//TS_MINX corresponds to ADC value when X = 0
+//TS_MINY corresponds to ADC value when Y = 0
+//TS_MAXX corresponds to ADC value when X = 240 -1
+//TS_MAXY corresponds to ADC value when Y = 320 -1
 
-// The STMPE610 uses hardware SPI on the shield, and #8
-#define STMPE_CS 8
-Adafruit_STMPE610 ts = Adafruit_STMPE610(STMPE_CS);
+#define TS_MINX 116*2
+#define TS_MAXX 890*2
+#define TS_MINY 83*2
+#define TS_MAXY 913*2
 
-// The display also uses hardware SPI, plus #9 & #10
-#define TFT_CS 10
-#define TFT_DC 9
+TouchScreen ts = TouchScreen(A3, A2, A1, A0);
+
+#define TFT_DC 6
+#define TFT_CS 5
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 // Size of the color selection boxes and the paintbrush size
@@ -48,10 +49,10 @@ void setup(void) {
   
   tft.begin();
 
-  if (!ts.begin()) {
+  /*if (!ts.begin()) {
     Serial.println("Couldn't start touchscreen controller");
     while (1);
-  }
+  }*/
   Serial.println("Touchscreen started");
   
   tft.fillScreen(ILI9341_BLACK);
@@ -73,7 +74,7 @@ void setup(void) {
 void loop()
 {
   // See if there's any  touch data for us
-  if (ts.bufferEmpty()) {
+  if (!ts.isTouching()) {
     return;
   }
   /*
@@ -84,7 +85,7 @@ void loop()
   */
 
   // Retrieve a point  
-  TS_Point p = ts.getPoint();
+  Point p = ts.getPoint();
   
  /*
   Serial.print("X = "); Serial.print(p.x);

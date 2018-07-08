@@ -1,4 +1,16 @@
-# Adafruit ILI9341 Arduino Library [![Build Status](https://travis-ci.org/adafruit/Adafruit_ILI9341.svg?branch=master)](https://travis-ci.org/adafruit/Adafruit_ILI9341)
+# Adafruit ILI9341 Arduino Library - Seeed Studio TFT Fork
+
+#### This is a fork to enable default functionality for the [2.8" TFT Touch Shield v2.0](http://wiki.seeedstudio.com/2.8inch_TFT_Touch_Shield_v2.0/)
+
+Use by instantiating the class with:
+
+```c++
+Adafruit_ILI9341 tft = Adafruit_ILI9341();
+```
+
+That's it.  No specific pins you need to specify.  If you look at the header file, you'll see that pins `5` and `6` are hardcoded into the constructor that takes no arguments.
+
+---
 
 This is a library for the Adafruit ILI9341 display products
 

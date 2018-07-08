@@ -146,6 +146,7 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
     public:
         Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK, int8_t _RST = -1, int8_t _MISO = -1);
         Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+		Adafruit_ILI9341(void) : Adafruit_ILI9341(5, 6) {}; // default to Seeed Studio 2.8" TFT Touch Shield v2.0
 
 #ifndef ESP32
         void      begin(uint32_t freq = 0);
